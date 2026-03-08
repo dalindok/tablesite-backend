@@ -1,7 +1,7 @@
 export const Role = {
-  user: "USER",
-  admin: "ADMIN",
-  resterauntOwner: "RESTAURANT_OWNER",
+  CUSTOMER: "CUSTOMER",
+  ADMIN: "ADMIN",
+  OWNER: "OWNER",
 };
 export const OrderStatus = {
   PENDING: 1,
