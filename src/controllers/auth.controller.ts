@@ -12,7 +12,7 @@ import {
   verifyOtpSchema,
 } from "../schemas/auth.schema";
 import { ramdomOtpCodes } from "../util/index.util";
-import { Role } from "@prisma/client";
+import { Role } from "../constants/index.constants";
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
