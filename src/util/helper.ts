@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 
 export const successResponse = <T>(message: string, data?: T) => ({
   success: true,

@@ -1,5 +1,5 @@
-import { Role } from "@prisma/client";
 import { z } from "zod";
+import { Role } from "../../generated/prisma/enums.ts";
 
 export const registerSchema = z.object({
   email: z.email(),
@@ -23,10 +23,12 @@ export const updateProfileSchema = z.object({
   last_name: z.string().min(1).optional(),
   phone: z.string().optional(),
   avatar_url: z.string().url().optional(),
+  role: z.enum([Role.CUSTOMER, Role.OWNER, Role.ADMIN]).optional(),
 });
 
 export const sendOtpSchema = z.object({
   phone: z.string().min(6),
+  is_debug: z.boolean().optional().default(false),
 });
 
 export const verifyOtpSchema = z.object({
@@ -34,8 +36,14 @@ export const verifyOtpSchema = z.object({
   otp: z.string().length(4),
 });
 
+export const changePasswordSchema = z.object({
+  current_password: z.string().min(6),
+  new_password: z.string().min(6),
+});
+
 export type RegisterBody = z.infer<typeof registerSchema>;
 export type LoginBody = z.infer<typeof loginSchema>;
 export type UpdateProfileBody = z.infer<typeof updateProfileSchema>;
 export type SendOtpBody = z.infer<typeof sendOtpSchema>;
 export type VerifyOtpBody = z.infer<typeof verifyOtpSchema>;
+export type ChangePasswordBody = z.infer<typeof changePasswordSchema>;

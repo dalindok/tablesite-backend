@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response } from "express";
-import { AppError } from "../errors/AppError";
+import type { NextFunction, Request, Response } from "express";
+import { AppError } from "../errors/AppError.ts";
 
 export const notFoundMiddleware = (
   req: Request,

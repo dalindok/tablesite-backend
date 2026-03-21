@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { AppError } from "../errors/AppError";
-import { Role } from "@prisma/client";
+import { AppError } from "../errors/AppError.ts";
+import { Role } from "../../generated/prisma/enums.ts";
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
 

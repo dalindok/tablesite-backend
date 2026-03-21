@@ -1,18 +1,19 @@
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { hashSync, compareSync } from "bcrypt";
 import jwt from "jsonwebtoken";
-import { prisma } from "../util/prisma";
-import { AppError } from "../errors/AppError";
-import { successResponse } from "../util/helper";
+import { prisma } from "../util/prisma.ts";
+import { AppError } from "../errors/AppError.ts";
+import { successResponse } from "../util/helper.ts";
 import {
   loginSchema,
   registerSchema,
   updateProfileSchema,
   sendOtpSchema,
   verifyOtpSchema,
-} from "../schemas/auth.schema";
-import { ramdomOtpCodes } from "../util/index.util";
-import { Role } from "../constants/index.constants";
+  changePasswordSchema,
+} from "../schemas/auth.schema.ts";
+import { ramdomOtpCodes } from "../util/index.util.ts";
+import { Role } from "../../generated/prisma/enums.ts";
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
@@ -49,7 +50,22 @@ const loginAdmin = async (req: Request, res: Response, next: NextFunction) => {
 
   const { email, password } = parseResult.data;
 
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: {
+      id: true,
+      email: true,
+      first_name: true,
+      last_name: true,
+      phone: true,
+      avatar_url: true,
+      role: true,
+      is_active: true,
+      created_at: true,
+      updated_at: true,
+      password: true,
+    },
+  });
   if (!user) {
     return next(
       new AppError(
@@ -60,7 +76,7 @@ const loginAdmin = async (req: Request, res: Response, next: NextFunction) => {
     );
   }
 
-  if (user.role !== "ADMIN") {
+  if (user.role !== Role.ADMIN) {
     return next(
       new AppError("Only admins can use this endpoint", 403, "AUTH_FORBIDDEN"),
     );
@@ -83,10 +99,12 @@ const loginAdmin = async (req: Request, res: Response, next: NextFunction) => {
     role: user.role,
   });
 
+  const { password: _, ...userResponse } = user;
+
   return res.json(
     successResponse("Logged in successfully", {
       token,
-      user: { id: user.id, email: user.email, role: user.role },
+      user: userResponse,
     }),
   );
 };
@@ -105,7 +123,22 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
   }
 
   const { email, password } = parseResult.data;
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: {
+      id: true,
+      email: true,
+      first_name: true,
+      last_name: true,
+      phone: true,
+      avatar_url: true,
+      role: true,
+      is_active: true,
+      created_at: true,
+      updated_at: true,
+      password: true,
+    },
+  });
   if (!user) {
     return next(
       new AppError(
@@ -133,10 +166,12 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
     role: user.role,
   });
 
+  const { password: _, ...userResponse } = user;
+
   return res.json(
     successResponse("Logged in successfully", {
       token,
-      user: { id: user.id, email: user.email, role: user.role },
+      user: userResponse,
     }),
   );
 };
@@ -196,13 +231,29 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
       email: true,
       first_name: true,
       last_name: true,
+      phone: true,
+      avatar_url: true,
       role: true,
+      is_active: true,
+      created_at: true,
+      updated_at: true,
     },
+  });
+
+  const token = createToken({
+    id: user.id,
+    email: user.email,
+    role: user.role,
   });
 
   return res
     .status(201)
-    .json(successResponse("User registered successfully", { user }));
+    .json(
+      successResponse(
+        `${role === Role.OWNER ? "Owner" : role === Role.ADMIN ? "Admin" : "User"} registered successfully`,
+        { token, user },
+      ),
+    );
 };
 
 const profile = async (req: Request, res: Response, next: NextFunction) => {
@@ -240,6 +291,7 @@ const updateProfile = async (
   next: NextFunction,
 ) => {
   const userId = (req as any).user?.id;
+  const userRole = (req as any).user?.role;
   if (!userId) {
     return next(new AppError("Not authenticated", 401, "AUTH_MISSING"));
   }
@@ -256,6 +308,20 @@ const updateProfile = async (
     );
   }
 
+  // Check if user is trying to update role
+  if (parseResult.data.role !== undefined) {
+    // Only ADMIN can update role
+    if (userRole !== Role.ADMIN) {
+      return next(
+        new AppError(
+          "Only admins can update user roles",
+          403,
+          "ROLE_UPDATE_FORBIDDEN",
+        ),
+      );
+    }
+  }
+
   const updated = await prisma.user.update({
     where: { id: userId },
     data: parseResult.data,
@@ -267,6 +333,8 @@ const updateProfile = async (
       phone: true,
       avatar_url: true,
       role: true,
+      is_active: true,
+      created_at: true,
       updated_at: true,
     },
   });
@@ -289,9 +357,18 @@ const sentSms = async (req: Request, res: Response, next: NextFunction) => {
     );
   }
 
-  const { phone } = parseResult.data;
-  const code = ramdomOtpCodes().toString().padStart(4, "0");
+  const { phone, is_debug } = parseResult.data;
+  const code = is_debug ? "1234" : ramdomOtpCodes().toString().padStart(4, "0");
   const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes
+  const expiresAtLocal = new Date(expiresAt).toLocaleString("en-US", {
+    hour12: true,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
 
   otpStore.set(phone, { code, expiresAt });
 
@@ -299,7 +376,10 @@ const sentSms = async (req: Request, res: Response, next: NextFunction) => {
   console.log(`OTP for ${phone}: ${code}`);
 
   return res.json(
-    successResponse("Otp has been generated and sent", { phone, expiresAt }),
+    successResponse("Otp has been generated and sent", {
+      phone,
+      expiresAt: expiresAtLocal,
+    }),
   );
 };
 
@@ -333,7 +413,124 @@ const verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
   }
 
   otpStore.delete(phone);
-  return res.json(successResponse("OTP verified", { phone }));
+
+  // Find existing user by phone or create new customer user
+  let user = await prisma.user.findFirst({
+    where: { phone },
+    select: {
+      id: true,
+      email: true,
+      first_name: true,
+      last_name: true,
+      phone: true,
+      avatar_url: true,
+      role: true,
+      is_active: true,
+      created_at: true,
+      updated_at: true,
+    },
+  });
+
+  if (!user) {
+    const randomPassword = hashSync(Math.random().toString(36).slice(2), 10);
+    const email = `otp_${phone.replace(/\D/g, "") || "user"}@table.site`;
+
+    user = await prisma.user.create({
+      data: {
+        email,
+        password: randomPassword,
+        first_name: "Guest",
+        last_name: phone,
+        phone,
+        role: Role.CUSTOMER,
+        customer: { create: {} },
+      },
+      select: {
+        id: true,
+        email: true,
+        first_name: true,
+        last_name: true,
+        phone: true,
+        avatar_url: true,
+        role: true,
+        is_active: true,
+        created_at: true,
+        updated_at: true,
+      },
+    });
+  }
+
+  const token = createToken({
+    id: user.id,
+    email: user.email,
+    role: user.role,
+  });
+
+  return res.json(
+    successResponse("Logged in successfully", {
+      token,
+      user,
+    }),
+  );
+};
+
+const changePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const userId = (req as any).user?.id;
+  if (!userId) {
+    return next(new AppError("Not authenticated", 401, "AUTH_MISSING"));
+  }
+
+  const parseResult = changePasswordSchema.safeParse(req.body);
+  if (!parseResult.success) {
+    return next(
+      new AppError(
+        "Invalid password change payload",
+        400,
+        "VALIDATION_ERROR",
+        parseResult.error.issues,
+      ),
+    );
+  }
+
+  const { current_password, new_password } = parseResult.data;
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      password: true,
+    },
+  });
+
+  if (!user) {
+    return next(new AppError("User not found", 404, "USER_NOT_FOUND"));
+  }
+
+  const matched = compareSync(current_password, user.password);
+  if (!matched) {
+    return next(
+      new AppError(
+        "Current password is incorrect",
+        400,
+        "INVALID_CURRENT_PASSWORD",
+      ),
+    );
+  }
+
+  const hashedPassword = hashSync(new_password, 10);
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      password: hashedPassword,
+    },
+  });
+
+  return res.json(successResponse("Password changed successfully", {}));
 };
 
 export {
@@ -344,4 +541,5 @@ export {
   updateProfile,
   sentSms,
   verifyOtp,
+  changePassword,
 };

@@ -1,6 +1,8 @@
 node_modules
 dist
 .env
+uploads
+.DS_Store
 
 # Ignore generated Prisma client files
 /generated/
