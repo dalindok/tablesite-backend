@@ -155,9 +155,15 @@ model Restaurant {
   email               String?
   website             String?
   cover_image_url     String?
+  banner_image        String?
+  image               String?
   status              RestaurantStatus @default(PENDING_APPROVAL)
   average_rating      Decimal          @default(0) @db.Decimal(3, 2)
   total_reviews       Int              @default(0)
+  max_capacity        Int?
+  min_capacity        Int?
+  parking_available   Boolean          @default(false)
+  dress_code          String?
   min_booking_notice  Int              @default(60)   // minutes in advance
   max_booking_days    Int              @default(30)   // days ahead
   cancellation_hours  Int              @default(24)   // hours before booking
@@ -177,6 +183,7 @@ model Restaurant {
   amenities         RestaurantAmenity[]
   approval          RestaurantApproval?
   favourited_by     FavouriteRestaurant[]
+  menus             Menu[]
 
   @@fulltext([name, description, cuisine_type, city])
 }
@@ -263,6 +270,49 @@ model FavouriteRestaurant {
   restaurant Restaurant @relation(fields: [restaurant_id], references: [id], onDelete: Cascade)
 
   @@unique([customer_id, restaurant_id])
+}
+
+// ─────────────────────────────────────────────
+// MENU
+// ─────────────────────────────────────────────
+
+model Menu {
+  id            Int      @id @default(autoincrement())
+  restaurant_id Int
+  name          String   // e.g., "Lunch Menu", "Dinner Menu", "Breakfast"
+  description   String?  @db.Text
+  price         Decimal? @db.Decimal(10, 2)
+  image         String?
+  is_active     Boolean  @default(true)
+  sort_order    Int      @default(0)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  restaurant Restaurant  @relation(fields: [restaurant_id], references: [id], onDelete: Cascade)
+  items         MenuItem[]
+
+  @@unique([restaurant_id, name])
+}
+
+model MenuItem {
+  id          Int      @id @default(autoincrement())
+  menu_id     Int
+  name        String
+  description String?  @db.Text
+  price       Decimal  @db.Decimal(10, 2)
+  image_url   String?
+  category    String?  // e.g., "Appetizer", "Main", "Dessert"
+  is_available Boolean @default(true)
+  is_vegan    Boolean  @default(false)
+  is_vegetarian Boolean @default(false)
+  is_gluten_free Boolean @default(false)
+  sort_order  Int      @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  menu Menu @relation(fields: [menu_id], references: [id], onDelete: Cascade)
+
+  @@index([menu_id])
 }
 
 // ─────────────────────────────────────────────

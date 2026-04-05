@@ -1,0 +1,110 @@
+[
+  {
+    "name": "Grilled Salmon",
+    "description": "Fresh Atlantic salmon with lemon butter sauce and seasonal vegetables",
+    "price": 18.99,
+    "category": "Main Course",
+    "is_available": true,
+    "is_vegan": false,
+    "is_vegetarian": false,
+    "is_gluten_free": true,
+    "sort_order": 1,
+    "image_url": "https://example.com/salmon.jpg"
+  },
+  {
+    "name": "Chicken Parmesan",
+    "description": "Breaded chicken breast with marinara and melted mozzarella",
+    "price": 16.99,
+    "category": "Main Course",
+    "is_available": true,
+    "is_vegan": false,
+    "is_vegetarian": false,
+    "is_gluten_free": false,
+    "sort_order": 2,
+    "image_url": "https://example.com/chicken-parm.jpg"
+  },
+  {
+    "name": "Vegetable Risotto",
+    "description": "Creamy arborio rice with seasonal vegetables and parmesan",
+    "price": 14.99,
+    "category": "Main Course",
+    "is_available": true,
+    "is_vegan": false,
+    "is_vegetarian": true,
+    "is_gluten_free": true,
+    "sort_order": 3,
+    "image_url": "https://example.com/risotto.jpg"
+  },
+  {
+    "name": "Bruschetta Appetizer",
+    "description": "Toasted bread with tomatoes, garlic, basil and olive oil",
+    "price": 8.99,
+    "category": "Appetizer",
+    "is_available": true,
+    "is_vegan": true,
+    "is_vegetarian": true,
+    "is_gluten_free": false,
+    "sort_order": 1,
+    "image_url": "https://example.com/bruschetta.jpg"
+  },
+  {
+    "name": "Caesar Salad",
+    "description": "Crisp romaine with creamy caesar dressing and parmesan",
+    "price": 9.99,
+    "category": "Salad",
+    "is_available": true,
+    "is_vegan": false,
+    "is_vegetarian": true,
+    "is_gluten_free": true,
+    "sort_order": 1,
+    "image_url": "https://example.com/caesar.jpg"
+  },
+  {
+    "name": "Chocolate Lava Cake",
+    "description": "Warm chocolate cake with molten center, served with vanilla ice cream",
+    "price": 7.99,
+    "category": "Dessert",
+    "is_available": true,
+    "is_vegan": false,
+    "is_vegetarian": true,
+    "is_gluten_free": false,
+    "sort_order": 1,
+    "image_url": "https://example.com/lava-cake.jpg"
+  },
+  {
+    "name": "Tiramisu",
+    "description": "Italian classic with layers of mascarpone and espresso",
+    "price": 6.99,
+    "category": "Dessert",
+    "is_available": true,
+    "is_vegan": false,
+    "is_vegetarian": true,
+    "is_gluten_free": false,
+    "sort_order": 2,
+    "image_url": "https://example.com/tiramisu.jpg"
+  },
+  {
+    "name": "House Wine (Red)",
+    "description": "Italian Chianti",
+    "price": 6,
+    "category": "Wine",
+    "is_available": true,
+    "is_vegan": true,
+    "is_vegetarian": true,
+    "is_gluten_free": true,
+    "sort_order": 1,
+    "image_url": null
+  },
+  {
+    "name": "Espresso",
+    "description": "Strong Italian coffee",
+    "price": 2.99,
+    "category": "Beverages",
+    "is_available": true,
+    "is_vegan": true,
+    "is_vegetarian": true,
+    "is_gluten_free": true,
+    "sort_order": 1,
+    "image_url": null
+  }
+]
