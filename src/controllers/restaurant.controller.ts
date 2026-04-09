@@ -1142,3 +1142,62 @@ export const deleteRestaurant = async (
     return next(error);
   }
 };
+
+// List addresses (cities/states) with total restaurants
+export const listAddressesWithRestaurantCount = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    // Get all active restaurants
+    const restaurants = await prisma.restaurant.findMany({
+      where: {
+        status: RestaurantStatus.ACTIVE,
+      },
+      select: {
+        city: true,
+        state: true,
+      },
+    });
+
+    // Group by city
+    const cityCounts: { [key: string]: number } = {};
+    const stateCounts: { [key: string]: number } = {};
+
+    restaurants.forEach((restaurant) => {
+      if (restaurant.city) {
+        cityCounts[restaurant.city] = (cityCounts[restaurant.city] || 0) + 1;
+      }
+      if (restaurant.state) {
+        stateCounts[restaurant.state] =
+          (stateCounts[restaurant.state] || 0) + 1;
+      }
+    });
+
+    const cities = Object.entries(cityCounts)
+      .map(([address, total_restaurants]) => ({
+        address,
+        type: "city" as const,
+        total_restaurants,
+      }))
+      .sort((a, b) => b.total_restaurants - a.total_restaurants);
+
+    const states = Object.entries(stateCounts)
+      .map(([address, total_restaurants]) => ({
+        address,
+        type: "state" as const,
+        total_restaurants,
+      }))
+      .sort((a, b) => b.total_restaurants - a.total_restaurants);
+
+    const data = {
+      cities,
+      states,
+    };
+
+    return res.json(successResponse("Addresses retrieved successfully", data));
+  } catch (error) {
+    return next(error);
+  }
+};
