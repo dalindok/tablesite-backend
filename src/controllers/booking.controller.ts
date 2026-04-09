@@ -49,7 +49,7 @@ export const createBooking = async (
       booking_date,
       booking_time,
       party_size,
-      duration_minutes,
+      occasion,
       special_requests,
       table_ids,
     } = parseResult.data;
@@ -188,7 +188,7 @@ export const createBooking = async (
         booking_date: new Date(booking_date),
         booking_time,
         party_size,
-        duration_minutes,
+        occasion: occasion || null,
         special_requests: special_requests || null,
         status: BookingStatus.PENDING,
         booking_tables: {

@@ -9,11 +9,13 @@ export const restaurantListSearchSchema = z.object({
   maxPrice: z.coerce.number().optional(),
   priceRate: z.enum(["low", "medium", "high"]).optional(),
   sortBy: z
-    .enum(["popular", "rated", "newest", "distance"])
+    .enum(["popular", "rated", "newest", "distance", "top"])
     .optional()
     .default("popular"),
   page: z.coerce.number().int().positive().optional().default(1),
   limit: z.coerce.number().int().positive().optional().default(20),
+  guestCount: z.coerce.number().int().positive().optional(),
+  minCapacity: z.coerce.number().int().positive().optional(),
 });
 
 export const addFavoriteSchema = z.object({

@@ -12,6 +12,7 @@ import {
   updateRestaurantStatus,
   deleteRestaurant,
   listAddressesWithRestaurantCount,
+  listCuisinesWithRestaurantCount,
 } from "../controllers/restaurant.controller.ts";
 import { authMiddleware } from "../middlewares/auth.middleware.ts";
 import { Role } from "../../generated/prisma/enums.ts";
@@ -24,6 +25,10 @@ restaurantRoute.get("/", asyncHandler(listRestaurants));
 restaurantRoute.get(
   "/addresses",
   asyncHandler(listAddressesWithRestaurantCount),
+);
+restaurantRoute.get(
+  "/cuisines/list",
+  asyncHandler(listCuisinesWithRestaurantCount),
 );
 restaurantRoute.get("/:id", asyncHandler(getRestaurantDetail));
 

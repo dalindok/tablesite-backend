@@ -5,7 +5,7 @@ export const createBookingSchema = z.object({
   booking_date: z.string().date(), // YYYY-MM-DD
   booking_time: z.string().regex(/^\d{2}:\d{2}$/), // HH:MM 24-hour format
   party_size: z.number().int().positive(),
-  duration_minutes: z.number().int().positive().optional().default(90),
+  occasion: z.string().optional(),
   special_requests: z.string().optional(),
   table_ids: z.array(z.number().int().positive()).optional(), // Optional: pre-select tables
 });

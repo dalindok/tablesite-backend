@@ -45,6 +45,8 @@ export const listRestaurants = async (
       sortBy,
       page,
       limit,
+      guestCount,
+      minCapacity,
     } = parseResult.data;
 
     const skip = (page - 1) * limit;
@@ -74,6 +76,15 @@ export const listRestaurants = async (
       );
     }
 
+    // Guest count filter - check restaurant capacity
+    if (guestCount) {
+      where.max_capacity = { gte: guestCount };
+    }
+
+    if (minCapacity) {
+      where.min_capacity = { lte: minCapacity };
+    }
+
     // Price range filter
     if (minPrice !== undefined || maxPrice !== undefined) {
       // This would require stored pricing information
@@ -86,6 +97,9 @@ export const listRestaurants = async (
       orderBy = { average_rating: "desc" };
     } else if (sortBy === "popular") {
       orderBy = { total_reviews: "desc" };
+    } else if (sortBy === "top") {
+      // Top restaurants by average rating and total reviews
+      orderBy = [{ average_rating: "desc" }, { total_reviews: "desc" }];
     } else if (sortBy === "newest") {
       orderBy = { created_at: "desc" };
     }
@@ -1197,6 +1211,54 @@ export const listAddressesWithRestaurantCount = async (
     };
 
     return res.json(successResponse("Addresses retrieved successfully", data));
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// List cuisines with total restaurants
+export const listCuisinesWithRestaurantCount = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    // Get all active restaurants
+    const restaurants = await prisma.restaurant.findMany({
+      where: {
+        status: RestaurantStatus.ACTIVE,
+        cuisine_type: {
+          not: null,
+        },
+      },
+      select: {
+        cuisine_type: true,
+      },
+    });
+
+    // Group by cuisine type and count
+    const cuisineCounts: { [key: string]: number } = {};
+
+    restaurants.forEach((restaurant) => {
+      if (restaurant.cuisine_type) {
+        cuisineCounts[restaurant.cuisine_type] =
+          (cuisineCounts[restaurant.cuisine_type] || 0) + 1;
+      }
+    });
+
+    const cuisines = Object.entries(cuisineCounts)
+      .map(([cuisine, total_restaurants]) => ({
+        cuisine,
+        total_restaurants,
+      }))
+      .sort((a, b) => b.total_restaurants - a.total_restaurants);
+
+    const data = {
+      cuisines,
+      total_unique_cuisines: cuisines.length,
+    };
+
+    return res.json(successResponse("Cuisines retrieved successfully", data));
   } catch (error) {
     return next(error);
   }

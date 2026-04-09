@@ -382,6 +382,7 @@ model Booking {
   booking_time     String        // "HH:MM"
   duration_minutes Int           @default(90)
   party_size       Int
+  occasion         String?
   status           BookingStatus @default(PENDING)
   special_requests String?       @db.Text
   internal_notes   String?       @db.Text
