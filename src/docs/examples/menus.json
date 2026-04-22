@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Lunch Menu",
+    "description": "Daily lunch specials available 11am-3pm",
+    "is_active": true,
+    "sort_order": 0
+  },
+  {
+    "name": "Dinner Menu",
+    "description": "Evening menu with our finest dishes",
+    "is_active": true,
+    "sort_order": 1
+  },
+  {
+    "name": "Breakfast Menu",
+    "description": "Morning specials available 7am-11am",
+    "is_active": true,
+    "sort_order": 0
+  },
+  {
+    "name": "Desserts & Drinks",
+    "description": "Sweet treats and beverages",
+    "is_active": true,
+    "sort_order": 2
+  }
+]

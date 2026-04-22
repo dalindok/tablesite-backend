@@ -1,0 +1,232 @@
+[
+  {
+    "name": "The Italian Kitchen",
+    "slug": "the-italian-kitchen",
+    "description": "Authentic Italian cuisine with wood-fired pizza and fresh pasta",
+    "cuisine_type": "Italian",
+    "address": "123 Main Street",
+    "city": "New York",
+    "state": "NY",
+    "country": "USA",
+    "postal_code": "10001",
+    "phone": "+1-212-555-0101",
+    "email": "info@italiankit.com",
+    "website": "https://www.italiankit.com",
+    "cover_image_url": "https://example.com/images/italian-kitchen.jpg",
+    "latitude": "40.7128",
+    "longitude": "-74.0060",
+    "min_booking_notice": 60,
+    "max_booking_days": 30,
+    "cancellation_hours": 24,
+    "deposit_required": true,
+    "deposit_amount": 50,
+    "max_capacity": 150,
+    "min_capacity": 2,
+    "parking_available": true,
+    "dress_code": "Business Casual",
+    "operating_hours": [
+      {
+        "day_of_week": "MONDAY",
+        "open_time": "11:00",
+        "close_time": "22:00",
+        "is_closed": false
+      },
+      {
+        "day_of_week": "TUESDAY",
+        "open_time": "11:00",
+        "close_time": "22:00",
+        "is_closed": false
+      },
+      {
+        "day_of_week": "WEDNESDAY",
+        "open_time": "11:00",
+        "close_time": "22:00",
+        "is_closed": false
+      },
+      {
+        "day_of_week": "THURSDAY",
+        "open_time": "11:00",
+        "close_time": "23:00",
+        "is_closed": false
+      },
+      {
+        "day_of_week": "FRIDAY",
+        "open_time": "11:00",
+        "close_time": "23:30",
+        "is_closed": false
+      },
+      {
+        "day_of_week": "SATURDAY",
+        "open_time": "11:00",
+        "close_time": "23:30",
+        "is_closed": false
+      },
+      {
+        "day_of_week": "SUNDAY",
+        "open_time": "12:00",
+        "close_time": "21:00",
+        "is_closed": false
+      }
+    ],
+    "tables": [
+      {
+        "table_number": "T1",
+        "capacity": 2,
+        "floor": "Ground",
+        "description": "Cozy table by the window"
+      },
+      {
+        "table_number": "T2",
+        "capacity": 4,
+        "floor": "Ground",
+        "description": "Table near the kitchen"
+      },
+      {
+        "table_number": "T3",
+        "capacity": 6,
+        "floor": "Ground",
+        "description": "Large table for group"
+      },
+      {
+        "table_number": "T4",
+        "capacity": 8,
+        "floor": "Upper",
+        "description": "Private dining area"
+      }
+    ],
+    "special_closures": [
+      {
+        "date": "2026-12-25",
+        "reason": "Christmas Day"
+      },
+      {
+        "date": "2026-01-01",
+        "reason": "New Year's Day"
+      }
+    ],
+    "tags": ["Fine Dining", "Romantic", "WiFi", "Family Friendly"],
+    "gallery_images": [
+      {
+        "url": "https://example.com/images/italian-kitchen-interior.jpg",
+        "caption": "Main dining area with wood-fired oven",
+        "sort_order": 0
+      },
+      {
+        "url": "https://example.com/images/italian-kitchen-pizza.jpg",
+        "caption": "Signature wood-fired pizza",
+        "sort_order": 1
+      },
+      {
+        "url": "https://example.com/images/italian-kitchen-pasta.jpg",
+        "caption": "Homemade fresh pasta",
+        "sort_order": 2
+      }
+    ],
+    "menus": [
+      {
+        "name": "Lunch Menu",
+        "description": "Seasonal lunch specials available 11:00 AM - 3:00 PM",
+        "is_active": true,
+        "sort_order": 0,
+        "menu_items": [
+          {
+            "name": "Margherita Pizza",
+            "description": "Classic wood-fired pizza with mozzarella, tomato, and basil",
+            "price": 14.99,
+            "category": "Main",
+            "is_available": true,
+            "is_vegan": false,
+            "is_vegetarian": true,
+            "is_gluten_free": false,
+            "sort_order": 0
+          },
+          {
+            "name": "Fettuccine Alfredo",
+            "description": "Creamy fettuccine with parmesan and butter sauce",
+            "price": 12.99,
+            "category": "Main",
+            "is_available": true,
+            "is_vegan": false,
+            "is_vegetarian": true,
+            "is_gluten_free": false,
+            "sort_order": 1
+          },
+          {
+            "name": "Caeser Salad",
+            "description": "Mixed greens with parmesan, croutons, and house-made dressing",
+            "price": 9.99,
+            "category": "Appetizer",
+            "is_available": true,
+            "is_vegan": false,
+            "is_vegetarian": true,
+            "is_gluten_free": true,
+            "sort_order": 2
+          }
+        ]
+      },
+      {
+        "name": "Dinner Menu",
+        "description": "Full dinner menu available from 5:00 PM - 11:00 PM",
+        "is_active": true,
+        "sort_order": 1,
+        "menu_items": [
+          {
+            "name": "Laser Bolognese",
+            "description": "Layers of fresh pasta with house-made Bolognese sauce and béchamel",
+            "price": 18.99,
+            "category": "Main",
+            "is_available": true,
+            "is_vegan": false,
+            "is_vegetarian": false,
+            "is_gluten_free": false,
+            "sort_order": 0
+          },
+          {
+            "name": "Osso Buco",
+            "description": "Braised veal shanks with saffron risotto and vegetables",
+            "price": 32.0,
+            "category": "Main",
+            "is_available": true,
+            "is_vegan": false,
+            "is_vegetarian": false,
+            "is_gluten_free": true,
+            "sort_order": 1
+          },
+          {
+            "name": "Seafood Risotto",
+            "description": "Creamy Arborio rice with shrimp, scallops, and squid in white wine sauce",
+            "price": 26.99,
+            "category": "Main",
+            "is_available": true,
+            "is_vegan": false,
+            "is_vegetarian": false,
+            "is_gluten_free": true,
+            "sort_order": 2
+          },
+          {
+            "name": "Bruschetta Trio",
+            "description": "Toasted bread with tomato & basil, white bean & garlic, and mushroom",
+            "price": 11.99,
+            "category": "Appetizer",
+            "is_available": true,
+            "is_vegan": true,
+            "is_vegetarian": true,
+            "is_gluten_free": false,
+            "sort_order": 3
+          },
+          {
+            "name": "Panna Cotta",
+            "description": "Silky vanilla-infused custard with berry compote",
+            "price": 8.99,
+            "category": "Dessert",
+            "is_available": true,
+            "is_vegan": false,
+            "is_vegetarian": true,
+            "is_gluten_free": true,
+            "sort_order": 4
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -30,9 +30,9 @@ const createToken = (payload: { id: number; email: string; role: string }) =>
   jwt.sign(
     payload as any,
     JWT_SECRET as any,
-    {
-      expiresIn: JWT_EXPIRES_IN,
-    } as any,
+    // {
+    //   expiresIn: JWT_EXPIRES_IN,
+    // } as any,
   ) as string;
 
 const loginAdmin = async (req: Request, res: Response, next: NextFunction) => {
