@@ -14,15 +14,19 @@ import {
 const router = express.Router();
 
 // Customer endpoints
-router.post("/create", authMiddleware, createBooking);
-router.get("/my-bookings", authMiddleware, getCustomerBookings);
-router.get("/:booking_id", authMiddleware, getBookingDetail);
-router.post("/:booking_id/cancel", authMiddleware, cancelBooking);
+router.post("/create", authMiddleware(), createBooking);
+router.get("/my-bookings", authMiddleware(), getCustomerBookings);
+router.get("/:booking_id", authMiddleware(), getBookingDetail);
+router.post("/:booking_id/cancel", authMiddleware(), cancelBooking);
 
 // Restaurant/Admin endpoints
-router.get("/restaurant/:restaurant_id", authMiddleware, getRestaurantBookings);
-router.post("/:booking_id/accept", authMiddleware, acceptBooking);
-router.post("/:booking_id/reject", authMiddleware, rejectBooking);
-router.patch("/:booking_id/status", authMiddleware, updateBookingStatus);
+router.get(
+  "/restaurant/:restaurant_id",
+  authMiddleware(),
+  getRestaurantBookings,
+);
+router.post("/:booking_id/accept", authMiddleware(), acceptBooking);
+router.post("/:booking_id/reject", authMiddleware(), rejectBooking);
+router.patch("/:booking_id/status", authMiddleware(), updateBookingStatus);
 
 export default router;
