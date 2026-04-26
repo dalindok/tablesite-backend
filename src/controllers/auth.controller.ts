@@ -59,6 +59,7 @@ const loginAdmin = async (req: Request, res: Response, next: NextFunction) => {
       last_name: true,
       phone: true,
       avatar_url: true,
+      gender: true,
       role: true,
       is_active: true,
       created_at: true,
@@ -132,6 +133,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
       last_name: true,
       phone: true,
       avatar_url: true,
+      gender: true,
       role: true,
       is_active: true,
       created_at: true,
@@ -189,7 +191,7 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
     );
   }
 
-  const { email, password, first_name, last_name, phone, role } =
+  const { email, password, first_name, last_name, phone, gender, role } =
     parseResult.data;
 
   const existing = await prisma.user.findUnique({ where: { email } });
@@ -208,6 +210,7 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
       first_name,
       last_name,
       phone,
+      gender,
       role,
       // create role-specific record depending on selected role
       ...(role === Role.OWNER && {
@@ -233,6 +236,7 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
       last_name: true,
       phone: true,
       avatar_url: true,
+      gender: true,
       role: true,
       is_active: true,
       created_at: true,
@@ -269,6 +273,7 @@ const profile = async (req: Request, res: Response, next: NextFunction) => {
       email: true,
       first_name: true,
       last_name: true,
+      gender: true,
       phone: true,
       avatar_url: true,
       role: true,
@@ -331,6 +336,7 @@ const updateProfile = async (
       first_name: true,
       last_name: true,
       phone: true,
+      gender: true,
       avatar_url: true,
       role: true,
       is_active: true,
@@ -423,6 +429,7 @@ const verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
       first_name: true,
       last_name: true,
       phone: true,
+      gender: true,
       avatar_url: true,
       role: true,
       is_active: true,
@@ -450,6 +457,7 @@ const verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
         email: true,
         first_name: true,
         last_name: true,
+        gender: true,
         phone: true,
         avatar_url: true,
         role: true,

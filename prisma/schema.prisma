@@ -17,6 +17,12 @@ enum Role {
   ADMIN
 }
 
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
 enum BookingStatus {
   PENDING
   CONFIRMED
@@ -78,6 +84,7 @@ model User {
   last_name  String
   phone      String?
   avatar_url String?
+  gender     Gender?
   role       Role     @default(CUSTOMER)
   is_active  Boolean  @default(true)
   created_at DateTime @default(now())

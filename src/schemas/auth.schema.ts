@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Role } from "../../generated/prisma/enums.ts";
+import { Role, Gender } from "../../generated/prisma/enums.ts";
 
 export const registerSchema = z.object({
   email: z.email(),
@@ -7,6 +7,7 @@ export const registerSchema = z.object({
   first_name: z.string().min(1),
   last_name: z.string().min(1),
   phone: z.string().optional(),
+  gender: z.enum([Gender.MALE, Gender.FEMALE, Gender.OTHER]).optional(),
   role: z
     .enum([Role.CUSTOMER, Role.OWNER, Role.ADMIN])
     .optional()
@@ -23,6 +24,7 @@ export const updateProfileSchema = z.object({
   last_name: z.string().min(1).optional(),
   phone: z.string().optional(),
   avatar_url: z.string().url().optional(),
+  gender: z.enum([Gender.MALE, Gender.FEMALE, Gender.OTHER]).optional(),
   role: z.enum([Role.CUSTOMER, Role.OWNER, Role.ADMIN]).optional(),
 });
 
