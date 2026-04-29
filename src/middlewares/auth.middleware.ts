@@ -55,3 +55,44 @@ export const authMiddleware = (roles?: Role[]) => {
     }
   };
 };
+
+export const optionalAuthMiddleware = (roles?: Role[]) => {
+  return (req: AuthRequest, res: Response, next: NextFunction) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      // No auth provided - continue without user
+      return next();
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    try {
+      const payload = jwt.verify(token, JWT_SECRET) as {
+        id: number;
+        email: string;
+        role: Role;
+      };
+
+      if (!payload || !payload.id) {
+        // Invalid token - continue without user
+        return next();
+      }
+
+      if (roles && roles.length && !roles.includes(payload.role)) {
+        // Role not allowed - continue without user
+        return next();
+      }
+
+      req.user = {
+        id: payload.id,
+        email: payload.email,
+        role: payload.role,
+      };
+
+      return next();
+    } catch (error) {
+      // Token verification failed - continue without user
+      return next();
+    }
+  };
+};

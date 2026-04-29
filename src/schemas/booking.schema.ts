@@ -8,6 +8,11 @@ export const createBookingSchema = z.object({
   occasion: z.string().optional(),
   special_requests: z.string().optional(),
   table_ids: z.array(z.number().int().positive()).optional(), // Optional: pre-select tables
+  // Guest booking fields
+  first_name: z.string().min(1).max(50),
+  last_name: z.string().min(1).max(50),
+  phone: z.string().min(10).max(15),
+  email: z.string().email().optional(),
 });
 
 export const updateBookingStatusSchema = z.object({

@@ -1,5 +1,8 @@
 import express from "express";
-import { authMiddleware } from "../middlewares/auth.middleware.ts";
+import {
+  authMiddleware,
+  optionalAuthMiddleware,
+} from "../middlewares/auth.middleware.ts";
 import {
   createBooking,
   getCustomerBookings,
@@ -14,7 +17,7 @@ import {
 const router = express.Router();
 
 // Customer endpoints
-router.post("/create", authMiddleware(), createBooking);
+router.post("/create", optionalAuthMiddleware(), createBooking);
 router.get("/my-bookings", authMiddleware(), getCustomerBookings);
 router.get("/:booking_id", authMiddleware(), getBookingDetail);
 router.post("/:booking_id/cancel", authMiddleware(), cancelBooking);

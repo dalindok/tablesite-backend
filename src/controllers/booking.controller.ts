@@ -15,22 +15,12 @@ import {
 import type { AuthRequest } from "../middlewares/auth.middleware.ts";
 import { BookingStatus, Role } from "../../generated/prisma/enums.ts";
 
-// Create booking (customer only)
+// Create booking (customer or guest)
 export const createBooking = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction,
 ) => {
-  if (!req.user) {
-    return next(new AppError("Authentication required", 401, "AUTH_REQUIRED"));
-  }
-
-  if (req.user.role !== Role.CUSTOMER) {
-    return next(
-      new AppError("Only customers can create bookings", 403, "FORBIDDEN"),
-    );
-  }
-
   const parseResult = createBookingSchema.safeParse(req.body);
   if (!parseResult.success) {
     return next(
@@ -52,6 +42,10 @@ export const createBooking = async (
       occasion,
       special_requests,
       table_ids,
+      first_name,
+      last_name,
+      phone,
+      email,
     } = parseResult.data;
 
     // Verify restaurant exists and is active
@@ -70,13 +64,80 @@ export const createBooking = async (
       );
     }
 
-    // Get customer
-    const customer = await prisma.customer.findUnique({
-      where: { user_id: req.user.id },
-    });
+    // Get or create customer
+    let customer;
+    if (req.user && req.user.role === Role.CUSTOMER) {
+      // Authenticated customer
+      customer = await prisma.customer.findUnique({
+        where: { user_id: req.user.id },
+      });
 
-    if (!customer) {
-      return next(new AppError("Customer profile not found", 404, "NOT_FOUND"));
+      if (!customer) {
+        return next(
+          new AppError("Customer profile not found", 404, "NOT_FOUND"),
+        );
+      }
+    } else {
+      // Guest booking
+      if (email) {
+        // Check if user with this email exists
+        const existingUser = await prisma.user.findUnique({
+          where: { email },
+          include: { customer: true },
+        });
+
+        if (existingUser) {
+          // Use existing customer if they have one
+          if (existingUser.customer) {
+            customer = existingUser.customer;
+          } else {
+            // Create customer profile for existing user
+            customer = await prisma.customer.create({
+              data: {
+                user_id: existingUser.id,
+              },
+            });
+          }
+        } else {
+          // Create new guest user
+          const guestUser = await prisma.user.create({
+            data: {
+              email,
+              password: "guest", // Temporary password
+              first_name: first_name,
+              last_name: last_name,
+              phone: phone,
+              role: Role.CUSTOMER,
+              is_active: false, // Mark as inactive guest user
+            },
+          });
+
+          customer = await prisma.customer.create({
+            data: {
+              user_id: guestUser.id,
+            },
+          });
+        }
+      } else {
+        // No email provided - create anonymous guest
+        const guestUser = await prisma.user.create({
+          data: {
+            email: `guest_${Date.now()}@temp.com`,
+            password: "guest",
+            first_name: first_name,
+            last_name: last_name,
+            phone: phone,
+            role: Role.CUSTOMER,
+            is_active: false,
+          },
+        });
+
+        customer = await prisma.customer.create({
+          data: {
+            user_id: guestUser.id,
+          },
+        });
+      }
     }
 
     // Validate booking date/time
