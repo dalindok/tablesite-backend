@@ -11,7 +11,7 @@ export const createBookingSchema = z.object({
   // Guest booking fields
   first_name: z.string().min(1).max(50),
   last_name: z.string().min(1).max(50),
-  phone: z.string().min(10).max(15),
+  phone: z.string().min(8).max(15),
   email: z.string().email().optional(),
 });
 
