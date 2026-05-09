@@ -15,6 +15,15 @@ A comprehensive Node.js/Express API for restaurant table management, bookings, a
 
 ---
 
+## Recent Updates
+
+### v1.x.x - May 2026
+
+- ✅ **Price Range Filter**: Added price range filtering for restaurants (Low, Medium, High categories)
+- ✅ **Enhanced Restaurant Search**: Improved search capabilities with multiple filter options
+
+---
+
 ## Project Overview
 
 TableSite is a full-featured restaurant management API that enables:
@@ -26,6 +35,7 @@ TableSite is a full-featured restaurant management API that enables:
 - **Menu Management** - Organize menus and menu items
 - **Reviews & Ratings** - Customer feedback and ratings
 - **Payment Processing** - Track payments and deposits
+- **Price Range Filtering** - Filter restaurants by price categories (Low, Medium, High)
 - **Admin Controls** - Restaurant approval and audit logs
 
 ---
@@ -288,7 +298,7 @@ http://localhost:3000/api
 
 #### Restaurant Routes (`/v1/restaurants`)
 
-- `GET /` - List all restaurants
+- `GET /` - List all restaurants (with search, filters, price range, sorting, pagination)
 - `GET /:id` - Get restaurant details
 - `POST /` - Create new restaurant (Owner)
 - `PUT /:id` - Update restaurant (Owner)

@@ -45,6 +45,12 @@ enum RestaurantStatus {
   CLOSED
 }
 
+enum PriceRange {
+  LOW
+  MEDIUM
+  HIGH
+}
+
 enum DayOfWeek {
   MONDAY
   TUESDAY
@@ -171,6 +177,8 @@ model Restaurant {
   min_capacity        Int?
   parking_available   Boolean          @default(false)
   dress_code          String?
+  price_range         PriceRange?
+  is_popular          Boolean          @default(false)
   min_booking_notice  Int              @default(60)   // minutes in advance
   max_booking_days    Int              @default(30)   // days ahead
   cancellation_hours  Int              @default(24)   // hours before booking

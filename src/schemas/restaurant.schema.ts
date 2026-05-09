@@ -114,6 +114,16 @@ export const createRestaurantSchema = z.object({
   min_capacity: z.number().int().positive().optional(),
   parking_available: z.boolean().optional().default(false),
   dress_code: z.string().optional(),
+  price_range: z.enum(["LOW", "MEDIUM", "HIGH"]).optional(),
+  is_popular: z
+    .preprocess((value) => {
+      if (typeof value === "string") {
+        return value.toLowerCase() === "true";
+      }
+      return value;
+    }, z.boolean())
+    .optional()
+    .default(false),
   min_booking_notice: z.coerce.number().int().optional().default(60),
   max_booking_days: z.coerce.number().int().optional().default(30),
   cancellation_hours: z.coerce.number().int().optional().default(24),

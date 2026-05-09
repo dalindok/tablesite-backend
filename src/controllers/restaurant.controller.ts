@@ -58,21 +58,21 @@ export const listRestaurants = async (
 
     if (search) {
       where.OR = [
-        { name: { contains: search, lte: "insensitive" } },
-        { description: { contains: search, lte: "insensitive" } },
-        { cuisine_type: { contains: search, lte: "insensitive" } },
+        { name: { contains: search } },
+        { description: { contains: search } },
+        { cuisine_type: { contains: search } },
       ];
     }
 
     if (cuisine) {
-      where.cuisine_type = { contains: cuisine, lte: "insensitive" };
+      where.cuisine_type = { contains: cuisine };
     }
 
     if (location) {
       where.OR = where.OR || [];
       where.OR.push(
-        { city: { contains: location, lte: "insensitive" } },
-        { address: { contains: location, lte: "insensitive" } },
+        { city: { contains: location } },
+        { address: { contains: location } },
       );
     }
 
@@ -86,9 +86,13 @@ export const listRestaurants = async (
     }
 
     // Price range filter
-    if (minPrice !== undefined || maxPrice !== undefined) {
-      // This would require stored pricing information
-      // For now, we'll filter based on deposit_amount as a proxy
+    if (priceRate) {
+      const priceRangeMap: { [key: string]: string } = {
+        low: "LOW",
+        medium: "MEDIUM",
+        high: "HIGH",
+      };
+      where.price_range = priceRangeMap[priceRate] as any;
     }
 
     // Build order by
@@ -96,9 +100,12 @@ export const listRestaurants = async (
     if (sortBy === "rated") {
       orderBy = { average_rating: "desc" };
     } else if (sortBy === "popular") {
-      orderBy = { total_reviews: "desc" };
+      // Filter to show only popular restaurants
+      where.is_popular = true;
+      orderBy = [{ total_reviews: "desc" }, { average_rating: "desc" }];
     } else if (sortBy === "top") {
-      // Top restaurants by average rating and total reviews
+      // Top restaurants by popularity, average rating, and total reviews
+      where.is_popular = true;
       orderBy = [{ average_rating: "desc" }, { total_reviews: "desc" }];
     } else if (sortBy === "newest") {
       orderBy = { created_at: "desc" };
@@ -165,6 +172,8 @@ export const listRestaurants = async (
       total_reviews: restaurant.total_reviews,
       max_capacity: restaurant.max_capacity,
       min_capacity: restaurant.min_capacity,
+      price_range: restaurant.price_range,
+      is_popular: restaurant.is_popular,
       gallery_images: restaurant.gallery_images,
       tags: restaurant.tags.map((rt: any) => rt.tag),
       amenities: restaurant.amenities.map((ra: any) => ra.amenity),
@@ -313,6 +322,8 @@ export const getRestaurantDetail = async (
       total_reviews: restaurant.total_reviews,
       max_capacity: restaurant.max_capacity,
       min_capacity: restaurant.min_capacity,
+      price_range: restaurant.price_range,
+      is_popular: restaurant.is_popular,
       gallery_images: restaurant.gallery_images,
       menus: restaurant.menus,
       tables: restaurant.tables,
@@ -516,6 +527,8 @@ export const getFavorites = async (
       cover_image_url: fav.restaurant.cover_image_url,
       average_rating: fav.restaurant.average_rating,
       total_reviews: fav.restaurant.total_reviews,
+      price_range: fav.restaurant.price_range,
+      is_popular: fav.restaurant.is_popular,
       gallery_images: fav.restaurant.gallery_images,
       tags: fav.restaurant.tags.map((rt: any) => rt.tag),
       amenities: fav.restaurant.amenities.map((ra: any) => ra.amenity),
@@ -722,6 +735,8 @@ export const importRestaurantsFromFile = async (
             min_capacity: restaurantData.min_capacity || null,
             parking_available: restaurantData.parking_available || false,
             dress_code: restaurantData.dress_code || null,
+            price_range: restaurantData.price_range || null,
+            is_popular: Boolean(restaurantData.is_popular),
             min_booking_notice: restaurantData.min_booking_notice || 60,
             max_booking_days: restaurantData.max_booking_days || 30,
             cancellation_hours: restaurantData.cancellation_hours || 24,
@@ -884,6 +899,8 @@ export const createRestaurant = async (
         cancellation_hours: data.cancellation_hours || 24,
         deposit_required: data.deposit_required || false,
         deposit_amount: data.deposit_amount || null,
+        price_range: data.price_range || null,
+        is_popular: data.is_popular ?? false,
         status: RestaurantStatus.PENDING_APPROVAL,
       },
       include: {
@@ -907,6 +924,7 @@ export const createRestaurant = async (
         name: restaurant.name,
         slug: restaurant.slug,
         status: restaurant.status,
+        is_popular: restaurant.is_popular,
         owner: restaurant.owner,
       }),
     );
@@ -1016,6 +1034,7 @@ export const updateRestaurant = async (
         name: updatedRestaurant.name,
         slug: updatedRestaurant.slug,
         status: updatedRestaurant.status,
+        is_popular: updatedRestaurant.is_popular,
         owner: updatedRestaurant.owner,
       }),
     );

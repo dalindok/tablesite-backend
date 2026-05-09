@@ -18,13 +18,13 @@ List active restaurants with search, sorting, and pagination.
 
 **Query Parameters**
 
-- `search` - string, optional
-- `cuisine` - string, optional
-- `location` - string, optional
-- `date` - ISO datetime string, optional
-- `minPrice` - number, optional
-- `maxPrice` - number, optional
-- `priceRate` - `low` | `medium` | `high`, optional
+- `search` - string, optional - Search in restaurant name, description, and cuisine
+- `cuisine` - string, optional - Filter by cuisine type
+- `location` - string, optional - Search in city, address, or state
+- `date` - ISO datetime string, optional - Filter by availability date
+- `minPrice` - number, optional - Minimum price range (deprecated, use priceRate)
+- `maxPrice` - number, optional - Maximum price range (deprecated, use priceRate)
+- `priceRate` - `low` | `medium` | `high`, optional - Filter by price range category
 - `sortBy` - `popular` | `rated` | `newest` | `distance`, optional, default: `popular`
 - `page` - number, optional, default: `1`
 - `limit` - number, optional, default: `20`, max: `100`
