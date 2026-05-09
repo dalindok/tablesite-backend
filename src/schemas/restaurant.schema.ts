@@ -11,7 +11,7 @@ export const restaurantListSearchSchema = z.object({
   sortBy: z
     .enum(["popular", "rated", "newest", "distance", "top"])
     .optional()
-    .default("popular"),
+    .default("newest"),
   page: z.coerce.number().int().positive().optional().default(1),
   limit: z.coerce.number().int().positive().optional().default(20),
   guestCount: z.coerce.number().int().positive().optional(),
