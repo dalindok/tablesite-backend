@@ -3,7 +3,7 @@ import { z } from "zod";
 export const createBookingSchema = z.object({
   restaurant_id: z.number().int().positive(),
   booking_date: z.string().date(), // YYYY-MM-DD
-  booking_time: z.string().regex(/^\d{2}:\d{2}$/), // HH:MM 24-hour format
+  booking_time: z.string().regex(/^(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/), // HH:MM 24-hour format
   party_size: z.number().int().positive(),
   occasion: z.string().optional(),
   special_requests: z.string().optional(),

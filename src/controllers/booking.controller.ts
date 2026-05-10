@@ -67,6 +67,7 @@ export const createBooking = async (
     // Get or create customer
     let customer;
     if (req.user && req.user.role === Role.CUSTOMER) {
+      console.log("Authenticated customer : ", req.user.id);
       // Authenticated customer
       customer = await prisma.customer.findUnique({
         where: { user_id: req.user.id },
@@ -100,6 +101,7 @@ export const createBooking = async (
           }
         } else {
           // Create new guest user
+          console.log("Create new guest user with email: ", email);
           const guestUser = await prisma.user.create({
             data: {
               email,
@@ -120,6 +122,12 @@ export const createBooking = async (
         }
       } else {
         // No email provided - create anonymous guest
+        console.log(
+          "No email provided - create anonymous guest : ",
+          first_name,
+          last_name,
+          phone,
+        );
         const guestUser = await prisma.user.create({
           data: {
             email: `guest_${Date.now()}@temp.com`,
@@ -140,8 +148,19 @@ export const createBooking = async (
       }
     }
 
+    console.log("customer : ", customer);
+
     // Validate booking date/time
-    const bookingDateTime = new Date(`${booking_date}T${booking_time}`);
+    // Normalize booking_time to HH:MM format for Date parsing
+    let normalizedTime = booking_time;
+    if (booking_time.length === 4) {
+      // e.g., "9:00" -> "09:00"
+      const [hours, minutes] = booking_time.split(":");
+      normalizedTime = `${hours.padStart(2, "0")}:${minutes}`;
+    }
+    console.log("normalizedTime : ", normalizedTime);
+    const bookingDateTime = new Date(`${booking_date}T${normalizedTime}:00Z`);
+    console.log("bookingDateTime: ", bookingDateTime);
     if (bookingDateTime < new Date()) {
       return next(
         new AppError(
@@ -175,8 +194,8 @@ export const createBooking = async (
     }
 
     if (
-      booking_time < operatingHour.open_time ||
-      booking_time > operatingHour.close_time
+      normalizedTime < operatingHour.open_time ||
+      normalizedTime > operatingHour.close_time
     ) {
       return next(
         new AppError(
@@ -247,7 +266,7 @@ export const createBooking = async (
         customer_id: customer.id,
         restaurant_id,
         booking_date: new Date(booking_date),
-        booking_time,
+        booking_time: normalizedTime,
         party_size,
         occasion: occasion || null,
         special_requests: special_requests || null,
@@ -302,6 +321,7 @@ export const createBooking = async (
         capacity: bt.table.capacity,
       })),
       customer: {
+        id: booking.customer.user.id,
         name: `${booking.customer.user.first_name} ${booking.customer.user.last_name}`,
         email: booking.customer.user.email,
         phone: booking.customer.user.phone,
