@@ -419,6 +419,27 @@ Permanently delete a restaurant from the database.
 }
 ```
 
+### DELETE /api/v1/restaurants/all
+
+Delete all restaurants and all related restaurant records. This is an admin-only endpoint.
+
+**Headers**
+
+- `Authorization: Bearer <admin_token>`
+- `Content-Type: application/json`
+
+**Response**
+
+```json
+{
+  "success": true,
+  "message": "All restaurants and related data deleted successfully",
+  "data": {
+    "deleted": 10
+  }
+}
+```
+
 ---
 
 ## cURL Examples
@@ -505,4 +526,12 @@ curl -X DELETE "http://localhost:3000/api/v1/restaurants/1" \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{"id":1}'
+```
+
+### Delete all restaurants
+
+```bash
+curl -X DELETE "http://localhost:3000/api/v1/restaurants/all" \
+  -H "Authorization: Bearer <admin_token>" \
+  -H "Content-Type: application/json"
 ```

@@ -11,6 +11,7 @@ import {
   updateRestaurant,
   updateRestaurantStatus,
   deleteRestaurant,
+  deleteAllRestaurants,
   listAddressesWithRestaurantCount,
   listCuisinesWithRestaurantCount,
 } from "../controllers/restaurant.controller.ts";
@@ -55,6 +56,11 @@ restaurantRoute.put(
   "/:id/status",
   authMiddleware([Role.ADMIN]),
   asyncHandler(updateRestaurantStatus),
+);
+restaurantRoute.delete(
+  "/all",
+  authMiddleware([Role.ADMIN]),
+  asyncHandler(deleteAllRestaurants),
 );
 restaurantRoute.delete(
   "/:id",

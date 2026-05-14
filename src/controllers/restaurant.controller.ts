@@ -1180,6 +1180,88 @@ export const deleteRestaurant = async (
   }
 };
 
+// Delete all restaurants and all related restaurant data
+export const deleteAllRestaurants = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (!req.user) {
+    return next(new AppError("Authentication required", 401, "AUTH_REQUIRED"));
+  }
+
+  if (req.user.role !== Role.ADMIN) {
+    return next(
+      new AppError("Only admins can delete all restaurants", 403, "FORBIDDEN"),
+    );
+  }
+
+  try {
+    const restaurantIds = (
+      await prisma.restaurant.findMany({ select: { id: true } })
+    ).map((restaurant) => restaurant.id);
+
+    if (!restaurantIds.length) {
+      return res.json(
+        successResponse("No restaurants found to delete", { deleted: 0 }),
+      );
+    }
+
+    await prisma.$transaction([
+      prisma.favouriteRestaurant.deleteMany({
+        where: { restaurant_id: { in: restaurantIds } },
+      }),
+      prisma.restaurantTag.deleteMany({
+        where: { restaurant_id: { in: restaurantIds } },
+      }),
+      prisma.restaurantAmenity.deleteMany({
+        where: { restaurant_id: { in: restaurantIds } },
+      }),
+      prisma.restaurantImage.deleteMany({
+        where: { restaurant_id: { in: restaurantIds } },
+      }),
+      prisma.specialClosure.deleteMany({
+        where: { restaurant_id: { in: restaurantIds } },
+      }),
+      prisma.operatingHour.deleteMany({
+        where: { restaurant_id: { in: restaurantIds } },
+      }),
+      prisma.menuItem.deleteMany({
+        where: { menu: { restaurant_id: { in: restaurantIds } } },
+      }),
+      prisma.menu.deleteMany({
+        where: { restaurant_id: { in: restaurantIds } },
+      }),
+      prisma.review.deleteMany({
+        where: { restaurant_id: { in: restaurantIds } },
+      }),
+      prisma.payment.deleteMany({
+        where: { booking: { restaurant_id: { in: restaurantIds } } },
+      }),
+      prisma.booking.deleteMany({
+        where: { restaurant_id: { in: restaurantIds } },
+      }),
+      prisma.table.deleteMany({
+        where: { restaurant_id: { in: restaurantIds } },
+      }),
+      prisma.restaurantApproval.deleteMany({
+        where: { restaurant_id: { in: restaurantIds } },
+      }),
+      prisma.restaurant.deleteMany({
+        where: { id: { in: restaurantIds } },
+      }),
+    ]);
+
+    return res.json(
+      successResponse("All restaurants and related data deleted successfully", {
+        deleted: restaurantIds.length,
+      }),
+    );
+  } catch (error) {
+    return next(error);
+  }
+};
+
 // List addresses (cities/states) with total restaurants
 export const listAddressesWithRestaurantCount = async (
   req: AuthRequest,
