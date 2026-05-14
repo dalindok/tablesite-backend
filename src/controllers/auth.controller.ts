@@ -327,6 +327,19 @@ const updateProfile = async (
     }
   }
 
+  if (parseResult.data.email) {
+    const existingEmailUser = await prisma.user.findUnique({
+      where: { email: parseResult.data.email },
+      select: { id: true },
+    });
+
+    if (existingEmailUser && existingEmailUser.id !== userId) {
+      return next(
+        new AppError("Email already in use", 409, "USER_EMAIL_ALREADY_EXISTS"),
+      );
+    }
+  }
+
   const updated = await prisma.user.update({
     where: { id: userId },
     data: parseResult.data,

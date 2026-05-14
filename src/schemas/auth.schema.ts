@@ -20,6 +20,7 @@ export const loginSchema = z.object({
 });
 
 export const updateProfileSchema = z.object({
+  email: z.string().email().optional(),
   first_name: z.string().min(1).optional(),
   last_name: z.string().min(1).optional(),
   phone: z.string().optional(),
