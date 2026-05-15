@@ -15,6 +15,17 @@ import {
 import type { AuthRequest } from "../middlewares/auth.middleware.ts";
 import { BookingStatus, Role } from "../../generated/prisma/enums.ts";
 
+const parseLocalDateTime = (date: string, time: string) => {
+  const [year, month, day] = date.split("-").map(Number);
+  const [hours, minutes] = time.split(":").map(Number);
+  return new Date(year, month - 1, day, hours, minutes);
+};
+
+const getLocalDateStart = (date: Date) =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+const getLocalTimeString = (date: Date) => date.toTimeString().slice(0, 5);
+
 // Create booking (customer or guest)
 export const createBooking = async (
   req: AuthRequest,
@@ -141,8 +152,9 @@ export const createBooking = async (
     }
 
     // Validate booking date/time
-    const bookingDateTime = new Date(`${booking_date}T${booking_time}`);
-    if (bookingDateTime < new Date()) {
+    const bookingDateTime = parseLocalDateTime(booking_date, booking_time);
+    const now = new Date();
+    if (bookingDateTime <= now) {
       return next(
         new AppError(
           "Booking date and time must be in the future",
@@ -365,10 +377,20 @@ export const getCustomerBookings = async (
       where.status = status;
     }
 
+    const now = new Date();
+    const today = getLocalDateStart(now);
+    const currentTime = getLocalTimeString(now);
+
     if (booking_type === "history") {
-      where.booking_date = { lte: new Date() };
+      where.OR = [
+        { booking_date: { lt: today } },
+        { booking_date: { equals: today }, booking_time: { lte: currentTime } },
+      ];
     } else if (booking_type === "upcoming") {
-      where.booking_date = { gte: new Date() };
+      where.OR = [
+        { booking_date: { gt: today } },
+        { booking_date: { equals: today }, booking_time: { gt: currentTime } },
+      ];
     }
 
     // Get total count
