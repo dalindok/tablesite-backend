@@ -217,7 +217,7 @@ The Grill,the-grill,Steakhouse,123 Main St,New York,NY,USA,10001,+1234567890,inf
 **Example curl (multipart/form-data)**
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/restaurants/import \
+curl -X POST http://localhost:3001/api/v1/restaurants/import \
   -H "Authorization: Bearer <admin_token>" \
   -F "file=@restaurants.json"
 ```
@@ -225,7 +225,7 @@ curl -X POST http://localhost:3000/api/v1/restaurants/import \
 **Postman setup**
 
 - Select `POST`
-- Use URL: `http://localhost:3000/api/v1/restaurants/import`
+- Use URL: `http://localhost:3001/api/v1/restaurants/import`
 - Set `Authorization` header
 - In `Body`, choose `form-data`
 - Add a key named `file`
@@ -447,21 +447,21 @@ Delete all restaurants and all related restaurant records. This is an admin-only
 ### List restaurants
 
 ```bash
-curl -X GET "http://localhost:3000/api/v1/restaurants?page=1&limit=20" \
+curl -X GET "http://localhost:3001/api/v1/restaurants?page=1&limit=20" \
   -H "Accept: application/json"
 ```
 
 ### Get restaurant details
 
 ```bash
-curl -X GET "http://localhost:3000/api/v1/restaurants/1" \
+curl -X GET "http://localhost:3001/api/v1/restaurants/1" \
   -H "Accept: application/json"
 ```
 
 ### Get favorite restaurants
 
 ```bash
-curl -X GET "http://localhost:3000/api/v1/restaurants/favorites/list?page=1&limit=20" \
+curl -X GET "http://localhost:3001/api/v1/restaurants/favorites/list?page=1&limit=20" \
   -H "Authorization: Bearer <token>" \
   -H "Accept: application/json"
 ```
@@ -469,7 +469,7 @@ curl -X GET "http://localhost:3000/api/v1/restaurants/favorites/list?page=1&limi
 ### Add favorite restaurant
 
 ```bash
-curl -X POST "http://localhost:3000/api/v1/restaurants/favorites/add" \
+curl -X POST "http://localhost:3001/api/v1/restaurants/favorites/add" \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{"restaurant_id": 123}'
@@ -478,7 +478,7 @@ curl -X POST "http://localhost:3000/api/v1/restaurants/favorites/add" \
 ### Remove favorite restaurant
 
 ```bash
-curl -X POST "http://localhost:3000/api/v1/restaurants/favorites/remove" \
+curl -X POST "http://localhost:3001/api/v1/restaurants/favorites/remove" \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{"restaurant_id": 123}'
@@ -487,7 +487,7 @@ curl -X POST "http://localhost:3000/api/v1/restaurants/favorites/remove" \
 ### Import restaurants (multipart/form-data)
 
 ```bash
-curl -X POST "http://localhost:3000/api/v1/restaurants/import" \
+curl -X POST "http://localhost:3001/api/v1/restaurants/import" \
   -H "Authorization: Bearer <admin_token>" \
   -F "file=@restaurants.json"
 ```
@@ -495,7 +495,7 @@ curl -X POST "http://localhost:3000/api/v1/restaurants/import" \
 ### Create a restaurant
 
 ```bash
-curl -X POST "http://localhost:3000/api/v1/restaurants" \
+curl -X POST "http://localhost:3001/api/v1/restaurants" \
   -H "Authorization: Bearer <admin_token>" \
   -H "Content-Type: application/json" \
   -d '{"name":"The Bistro","slug":"the-bistro","description":"Cozy neighborhood restaurant","cuisine_type":"French","address":"321 Elm St","city":"Chicago","state":"IL","country":"USA","postal_code":"60601","phone":"+1333333333","email":"contact@thebistro.com","website":"https://www.thebistro.com","cover_image_url":"https://example.com/image.jpg","latitude":"41.8781","longitude":"-87.6298","min_booking_notice":60,"max_booking_days":30,"cancellation_hours":24,"deposit_required":false,"deposit_amount":null}'
@@ -504,7 +504,7 @@ curl -X POST "http://localhost:3000/api/v1/restaurants" \
 ### Update a restaurant
 
 ```bash
-curl -X PUT "http://localhost:3000/api/v1/restaurants/1" \
+curl -X PUT "http://localhost:3001/api/v1/restaurants/1" \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{"name":"Updated Restaurant Name","phone":"+1999999999","website":"https://www.updated.com"}'
@@ -513,7 +513,7 @@ curl -X PUT "http://localhost:3000/api/v1/restaurants/1" \
 ### Update restaurant status
 
 ```bash
-curl -X PUT "http://localhost:3000/api/v1/restaurants/1/status" \
+curl -X PUT "http://localhost:3001/api/v1/restaurants/1/status" \
   -H "Authorization: Bearer <admin_token>" \
   -H "Content-Type: application/json" \
   -d '{"id":1,"status":"ACTIVE"}'
@@ -522,7 +522,7 @@ curl -X PUT "http://localhost:3000/api/v1/restaurants/1/status" \
 ### Delete a restaurant
 
 ```bash
-curl -X DELETE "http://localhost:3000/api/v1/restaurants/1" \
+curl -X DELETE "http://localhost:3001/api/v1/restaurants/1" \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{"id":1}'
@@ -531,7 +531,7 @@ curl -X DELETE "http://localhost:3000/api/v1/restaurants/1" \
 ### Delete all restaurants
 
 ```bash
-curl -X DELETE "http://localhost:3000/api/v1/restaurants/all" \
+curl -X DELETE "http://localhost:3001/api/v1/restaurants/all" \
   -H "Authorization: Bearer <admin_token>" \
   -H "Content-Type: application/json"
 ```

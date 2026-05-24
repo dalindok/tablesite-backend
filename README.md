@@ -111,7 +111,7 @@ Add the following environment variables to `.env`:
 DATABASE_URL="mysql://root:password@localhost:3306/tablesite_db"
 
 # Server Configuration
-PORT=3000
+PORT=3001
 NODE_ENV=development
 
 # JWT Configuration
@@ -196,7 +196,7 @@ npm run dev
 **Success!** You should see:
 
 ```
-API running on http://localhost:3000
+API running on http://localhost:3001
 ```
 
 ---
@@ -208,7 +208,7 @@ API running on http://localhost:3000
 Open your browser or use curl to test the API:
 
 ```bash
-curl http://localhost:3000/api/v1/auth
+curl http://localhost:3001/api/v1/auth
 ```
 
 Or use Postman/Insomnia to test the endpoints.
@@ -284,7 +284,7 @@ The API is organized in the following versions and endpoints:
 ### Base URL
 
 ```
-http://localhost:3000/api
+http://localhost:3001/api
 ```
 
 ### Main Endpoints
@@ -329,7 +329,7 @@ For detailed API documentation, see:
 | Variable       | Description                          | Default       |
 | -------------- | ------------------------------------ | ------------- |
 | `DATABASE_URL` | MySQL connection string              | Required      |
-| `PORT`         | Server port                          | `3000`        |
+| `PORT`         | Server port                          | `3001`        |
 | `NODE_ENV`     | Environment (development/production) | `development` |
 | `JWT_SECRET`   | Secret key for JWT signing           | Required      |
 

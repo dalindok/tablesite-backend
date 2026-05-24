@@ -419,13 +419,13 @@ Content-Type: application/json
 ### Get All Menus
 
 ```bash
-curl -X GET http://localhost:3000/api/v1/restaurants/1/menus
+curl -X GET http://localhost:3001/api/v1/restaurants/1/menus
 ```
 
 ### Create Menu
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/restaurants/1/menus \
+curl -X POST http://localhost:3001/api/v1/restaurants/1/menus \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -438,7 +438,7 @@ curl -X POST http://localhost:3000/api/v1/restaurants/1/menus \
 ### Add Menu Item
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/restaurants/1/menus/1/items \
+curl -X POST http://localhost:3001/api/v1/restaurants/1/menus/1/items \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -453,7 +453,7 @@ curl -X POST http://localhost:3000/api/v1/restaurants/1/menus/1/items \
 ### Update Menu Item
 
 ```bash
-curl -X PUT http://localhost:3000/api/v1/restaurants/1/menus/1/items/1 \
+curl -X PUT http://localhost:3001/api/v1/restaurants/1/menus/1/items/1 \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -465,7 +465,7 @@ curl -X PUT http://localhost:3000/api/v1/restaurants/1/menus/1/items/1 \
 ### Delete Menu Item
 
 ```bash
-curl -X DELETE http://localhost:3000/api/v1/restaurants/1/menus/1/items/1 \
+curl -X DELETE http://localhost:3001/api/v1/restaurants/1/menus/1/items/1 \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{

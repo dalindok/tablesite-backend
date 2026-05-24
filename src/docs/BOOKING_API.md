@@ -1,6 +1,6 @@
 # Booking API Documentation
 
-Base URL: `http://localhost:3000/api/v1/bookings`
+Base URL: `http://localhost:3001/api/v1/bookings`
 
 ## Authentication
 
@@ -18,7 +18,7 @@ Create a new booking. Only `CUSTOMER` can use this endpoint.
 ### curl example
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/bookings/create \
+curl -X POST http://localhost:3001/api/v1/bookings/create \
   -H "Authorization: Bearer <customer_token>" \
   -H "Content-Type: application/json" \
   -d '{
@@ -59,7 +59,7 @@ Fetch bookings for the authenticated customer.
 ### curl example
 
 ```bash
-curl -X GET "http://localhost:3000/api/v1/bookings/my-bookings?status=CONFIRMED&page=1&limit=20" \
+curl -X GET "http://localhost:3001/api/v1/bookings/my-bookings?status=CONFIRMED&page=1&limit=20" \
   -H "Authorization: Bearer <customer_token>"
 ```
 
@@ -87,7 +87,7 @@ Fetch a booking by ID.
 ### curl example
 
 ```bash
-curl -X GET http://localhost:3000/api/v1/bookings/456 \
+curl -X GET http://localhost:3001/api/v1/bookings/456 \
   -H "Authorization: Bearer <token>"
 ```
 
@@ -108,7 +108,7 @@ Cancel a booking. Only the customer who created it can cancel.
 ### curl example
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/bookings/456/cancel \
+curl -X POST http://localhost:3001/api/v1/bookings/456/cancel \
   -H "Authorization: Bearer <customer_token>" \
   -H "Content-Type: application/json" \
   -d '{ "reason": "Change of plans" }'
@@ -135,7 +135,7 @@ Fetch bookings for a restaurant. Allowed for restaurant `OWNER` and `ADMIN`.
 ### curl example
 
 ```bash
-curl -X GET "http://localhost:3000/api/v1/bookings/restaurant/123?status=PENDING&page=1&limit=20" \
+curl -X GET "http://localhost:3001/api/v1/bookings/restaurant/123?status=PENDING&page=1&limit=20" \
   -H "Authorization: Bearer <owner_or_admin_token>"
 ```
 
@@ -167,7 +167,7 @@ Accept a pending booking and optionally assign tables.
 ### curl example
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/bookings/456/accept \
+curl -X POST http://localhost:3001/api/v1/bookings/456/accept \
   -H "Authorization: Bearer <owner_or_admin_token>" \
   -H "Content-Type: application/json" \
   -d '{ "table_ids": [10, 11] }'
@@ -190,7 +190,7 @@ Reject a pending booking.
 ### curl example
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/bookings/456/reject \
+curl -X POST http://localhost:3001/api/v1/bookings/456/reject \
   -H "Authorization: Bearer <owner_or_admin_token>" \
   -H "Content-Type: application/json" \
   -d '{ "reason": "No availability" }'
@@ -213,7 +213,7 @@ Update the booking status directly.
 ### curl example
 
 ```bash
-curl -X PATCH http://localhost:3000/api/v1/bookings/456/status \
+curl -X PATCH http://localhost:3001/api/v1/bookings/456/status \
   -H "Authorization: Bearer <owner_or_admin_token>" \
   -H "Content-Type: application/json" \
   -d '{ "status": "COMPLETED" }'
