@@ -31,6 +31,12 @@ enum BookingStatus {
   NO_SHOW
 }
 
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 enum TableStatus {
   AVAILABLE
   RESERVED
@@ -133,6 +139,7 @@ model RestaurantOwner {
 
   user        User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
   restaurants Restaurant[]
+  requests    RestaurantRequest[]
 }
 
 model Admin {
@@ -144,6 +151,7 @@ model Admin {
   user            User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
   audit_logs      AuditLog[]
   restaurant_approvals RestaurantApproval[]
+  reviewed_requests    RestaurantRequest[]
 }
 
 // ─────────────────────────────────────────────
@@ -215,6 +223,29 @@ model RestaurantApproval {
 
   restaurant Restaurant @relation(fields: [restaurant_id], references: [id], onDelete: Cascade)
   admin      Admin      @relation(fields: [admin_id], references: [id])
+}
+
+// ─────────────────────────────────────────────
+// RESTAURANT SLOT REQUEST
+// ─────────────────────────────────────────────
+
+model RestaurantRequest {
+  id              Int           @id @default(autoincrement())
+  owner_id        Int
+  current_count   Int
+  requested_count Int
+  reason          String        @db.Text
+  status          RequestStatus @default(PENDING)
+  admin_note      String?       @db.Text
+  reviewed_by_id  Int?
+  reviewed_at     DateTime?
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+
+  owner       RestaurantOwner @relation(fields: [owner_id], references: [id], onDelete: Cascade)
+  reviewed_by Admin?          @relation(fields: [reviewed_by_id], references: [id])
+
+  @@index([owner_id, status])
 }
 
 model RestaurantImage {

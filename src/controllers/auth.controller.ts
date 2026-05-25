@@ -554,6 +554,12 @@ const changePassword = async (
   return res.json(successResponse("Password changed successfully", {}));
 };
 
+const logout = async (req: Request, res: Response, next: NextFunction) => {
+  // JWT is stateless — client discards the token.
+  // Optionally revoke refresh tokens stored in DB here in the future.
+  return res.json(successResponse("Logged out successfully", {}));
+};
+
 export {
   login,
   loginAdmin,
@@ -563,4 +569,5 @@ export {
   sentSms,
   verifyOtp,
   changePassword,
+  logout,
 };

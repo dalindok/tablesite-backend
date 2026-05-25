@@ -9,6 +9,7 @@ import {
   sentSms,
   verifyOtp,
   changePassword,
+  logout,
 } from "../controllers/auth.controller.ts";
 import { authMiddleware } from "../middlewares/auth.middleware.ts";
 
@@ -18,7 +19,11 @@ authRoute.post("/register", asyncHandler(register));
 authRoute.post("/login", asyncHandler(login));
 authRoute.post("/login-admin", asyncHandler(loginAdmin));
 
+// /auth/me — alias for /auth/profile (used by management dashboard)
+authRoute.get("/me", authMiddleware(), asyncHandler(profile));
 authRoute.get("/profile", authMiddleware(), asyncHandler(profile));
+authRoute.post("/logout", authMiddleware(), asyncHandler(logout));
+
 authRoute.put("/update-user", authMiddleware(), asyncHandler(updateProfile));
 authRoute.put(
   "/change-password",
