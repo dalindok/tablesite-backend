@@ -192,6 +192,7 @@ model Restaurant {
   cancellation_hours  Int              @default(24)   // hours before booking
   deposit_required    Boolean          @default(false)
   deposit_amount      Decimal?         @db.Decimal(10, 2)
+  admin_note          String?          @db.Text
   created_at          DateTime         @default(now())
   updated_at          DateTime         @updatedAt
 
@@ -434,7 +435,11 @@ model Booking {
   internal_notes   String?       @db.Text
   confirmed_at     DateTime?
   cancelled_at     DateTime?
-  cancellation_reason String?    @db.Text
+  cancellation_reason              String?    @db.Text
+  contact_customer_first_name      String?
+  contact_customer_last_name       String?
+  contact_customer_phone           String?
+  contact_customer_email           String?
   created_at       DateTime      @default(now())
   updated_at       DateTime      @updatedAt
 

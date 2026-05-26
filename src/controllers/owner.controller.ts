@@ -54,6 +54,10 @@ const bookingStatusReverse: Record<string, string> = {
 };
 
 function formatRestaurant(r: any) {
+  let totalCapacity = (r.tables as any[])?.reduce(
+    (sum: number, t: any) => sum + (t.capacity ?? 0),
+    0,
+  );
   return {
     id: r.id,
     name: r.name,
@@ -63,13 +67,7 @@ function formatRestaurant(r: any) {
     phone: r.phone ?? "",
     email: r.email ?? "",
     cuisineType: r.cuisine_type ?? "Other",
-    capacity:
-      (r.tables as any[])?.reduce(
-        (sum: number, t: any) => sum + (t.capacity ?? 0),
-        0,
-      ) ??
-      r.max_capacity ??
-      0,
+    capacity: totalCapacity > 0 ? totalCapacity : (r.max_capacity ?? 0),
     openingTime: r.operating_hours?.[0]?.open_time ?? "09:00",
     closingTime: r.operating_hours?.[0]?.close_time ?? "22:00",
     image: r.cover_image_url ?? null,
@@ -86,24 +84,43 @@ function formatRestaurant(r: any) {
 
 function formatBooking(b: any) {
   const tableNumber = b.booking_tables?.[0]?.table?.table_number
-    ? Number(b.booking_tables[0].table.table_number)
+    ? b.booking_tables[0].table.table_number
     : undefined;
+
+  // Contact details submitted at booking time (stored directly on the booking row)
+  const contactName =
+    [b.contact_customer_first_name, b.contact_customer_last_name]
+      .filter(Boolean)
+      .join(" ") || null;
+
+  // Linked user account name (may differ from contact for guests)
+  const bookingUserName = b.customer?.user
+    ? `${b.customer.user.first_name ?? ""} ${b.customer.user.last_name ?? ""}`.trim() ||
+      null
+    : null;
+
   return {
     id: b.id,
     restaurantId: b.restaurant_id,
     restaurantName: b.restaurant?.name ?? null,
     customerId: b.customer_id,
-    customerName: b.customer?.user
-      ? `${b.customer.user.first_name} ${b.customer.user.last_name}`.trim()
-      : null,
-    customerEmail: b.customer?.user?.email ?? null,
-    customerPhone: b.customer?.user?.phone ?? null,
+    // Legacy — falls back gracefully for old rows without contact fields
+    customerName: contactName ?? bookingUserName,
+    customerEmail: b.contact_customer_email ?? b.customer?.user?.email ?? null,
+    customerPhone: b.contact_customer_phone ?? b.customer?.user?.phone ?? null,
+    // Contact customer (what they filled in the booking form)
+    contactCustomerName: contactName,
+    contactCustomerPhone: b.contact_customer_phone ?? null,
+    contactCustomerEmail: b.contact_customer_email ?? null,
+    // Linked account
+    bookingUserName,
     date: b.booking_date,
     time: b.booking_time,
     partySize: b.party_size,
     status: bookingStatusReverse[b.status] ?? "pending",
     specialRequests: b.special_requests ?? null,
     tableNumber,
+    cancellationReason: b.cancellation_reason ?? null,
     createdAt: b.created_at,
     updatedAt: b.updated_at,
   };
@@ -282,6 +299,7 @@ export const ownerDashboardStats = async (
         confirmedBookings,
         todayBookings,
         canAddRestaurant,
+        restaurantLimit: approvedLimit,
         recentBookings: recentBookings.map(formatBooking),
       }),
     );
@@ -316,7 +334,7 @@ export const ownerListRestaurants = async (
       ];
     }
 
-    const [restaurants, total] = await Promise.all([
+    const [restaurants, total, totalOwned, latestApproved] = await Promise.all([
       prisma.restaurant.findMany({
         where,
         skip,
@@ -325,7 +343,18 @@ export const ownerListRestaurants = async (
         include: restaurantInclude,
       }),
       prisma.restaurant.count({ where }),
+      // Unfiltered count — used for limit check regardless of search
+      prisma.restaurant.count({ where: { owner_id: owner.id } }),
+      prisma.restaurantRequest.findFirst({
+        where: { owner_id: owner.id, status: "APPROVED" },
+        orderBy: { reviewed_at: "desc" },
+      }),
     ]);
+
+    const restaurantLimit = latestApproved
+      ? latestApproved.requested_count
+      : DEFAULT_RESTAURANT_LIMIT;
+    const canAddRestaurant = totalOwned < restaurantLimit;
 
     return res.json(
       successResponse("Owner restaurants fetched", {
@@ -334,6 +363,8 @@ export const ownerListRestaurants = async (
         page,
         limit,
         totalPages: Math.ceil(total / limit),
+        restaurantLimit,
+        canAddRestaurant,
       }),
     );
   } catch (err) {
@@ -400,7 +431,7 @@ export const ownerCreateRestaurant = async (
       state: z.string().optional(),
       country: z.string().optional(),
       postal_code: z.string().optional(),
-      postalCode:  z.string().optional(),
+      postalCode: z.string().optional(),
       phone: z.string().optional(),
       email: z.string().email().optional().or(z.literal("")),
       website: z.string().url().optional().or(z.literal("")),
@@ -547,7 +578,7 @@ export const ownerUpdateRestaurant = async (
       state: z.string().optional(),
       country: z.string().optional(),
       postal_code: z.string().optional(),
-      postalCode:  z.string().optional(),
+      postalCode: z.string().optional(),
       phone: z.string().optional(),
       email: z.string().email().optional().or(z.literal("")),
       website: z.string().url().optional().or(z.literal("")),
@@ -628,7 +659,8 @@ export const ownerUpdateRestaurant = async (
     if (dressCode !== undefined) updateData.dress_code = dressCode;
     if (resolvedCoverImageUrl !== undefined)
       updateData.cover_image_url = resolvedCoverImageUrl || null;
-    if (resolvedPostalCode !== undefined) updateData.postal_code = resolvedPostalCode || null;
+    if (resolvedPostalCode !== undefined)
+      updateData.postal_code = resolvedPostalCode || null;
     if (website !== undefined) updateData.website = website || null;
 
     const restaurant = await prisma.restaurant.update({
@@ -791,10 +823,11 @@ export const ownerUpdateBooking = async (
       status: z
         .enum(["pending", "confirmed", "cancelled", "completed", "no_show"])
         .optional(),
-      tableNumber: z.number().int().optional(),
+      tableNumber: z.string().optional(),
       date: z.string().optional(),
       time: z.string().optional(),
       partySize: z.number().int().positive().optional(),
+      cancellationReason: z.string().optional(),
     });
     const parsed = schema.safeParse(req.body);
     if (!parsed.success)
@@ -807,12 +840,14 @@ export const ownerUpdateBooking = async (
         ),
       );
 
-    const { status, date, time, partySize } = parsed.data;
+    const { status, date, time, partySize, cancellationReason } = parsed.data;
     const updateData: any = {};
     if (status) updateData.status = bookingStatusMap[status];
     if (date) updateData.booking_date = new Date(date);
     if (time) updateData.booking_time = time;
     if (partySize) updateData.party_size = partySize;
+    if (status === "cancelled")
+      updateData.cancellation_reason = cancellationReason || null;
 
     const booking = await prisma.booking.update({
       where: { id },

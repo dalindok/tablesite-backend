@@ -282,6 +282,10 @@ export const createBooking = async (
         occasion: occasion || null,
         special_requests: special_requests || null,
         status: BookingStatus.PENDING,
+        contact_customer_first_name: first_name || null,
+        contact_customer_last_name: last_name || null,
+        contact_customer_phone: phone || null,
+        contact_customer_email: email || null,
         booking_tables: {
           createMany: {
             data: selectedTableIds.map((tableId) => ({
@@ -728,6 +732,12 @@ export const getBookingDetail = async (
     }
 
     // Format response
+    const firstName = booking.customer.user.first_name ?? null;
+    const lastName = booking.customer.user.last_name ?? null;
+    // Fallback: when both first_name and last_name are null, fall back to customerName.
+    const combinedName = `${firstName ?? ""} ${lastName ?? ""}`.trim();
+    const customerName =
+      firstName == null && lastName == null ? null : combinedName || null;
     const formattedBooking = {
       id: booking.id,
       reference_code: booking.reference_code,
@@ -740,7 +750,9 @@ export const getBookingDetail = async (
       internal_notes: booking.internal_notes,
       customer: {
         id: booking.customer.user.id,
-        name: `${booking.customer.user.first_name} ${booking.customer.user.last_name}`,
+        first_name: firstName,
+        last_name: lastName,
+        name: customerName,
         email: booking.customer.user.email,
         phone: booking.customer.user.phone,
       },
@@ -771,6 +783,7 @@ export const getBookingDetail = async (
         : null,
       confirmed_at: booking.confirmed_at,
       cancelled_at: booking.cancelled_at,
+      created_date: booking.created_at,
       created_at: booking.created_at,
       updated_at: booking.updated_at,
     };
